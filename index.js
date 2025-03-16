@@ -62,16 +62,22 @@ builder.defineSubtitlesHandler(async (args) => {
 // ✅ FIX: Call getInterface() once and store the result
 const addonInterface = builder.getInterface();
 
-const PORT = 7000;
+const PORT = process.env.PORT || 7000;
 
 // ✅ FIX: Use stored `addonInterface` instead of `.then()`
 http.createServer((req, res) => {
     res.setHeader("Content-Type", "application/json");
     if (req.url === "/manifest.json") {
         res.end(JSON.stringify(addonInterface.manifest));
+    } else if (req.url.startsWith("/subtitles")) {
+        addonInterface.subtitles(req).then((subtitles) => {
+            res.end(JSON.stringify(subtitles));
+        }).catch((err) => {
+            res.end(JSON.stringify({ error: err.message }));
+        });
     } else {
         res.end(JSON.stringify({ error: "Invalid request" }));
     }
 }).listen(PORT, "0.0.0.0", () => {
-    console.log(`✅ Stremio OpenSubtitles Add-on is running on http://127.0.0.1:${PORT}`);
+    console.log(`✅ Stremio OpenSubtitles Add-on is running on port ${PORT}`);
 });

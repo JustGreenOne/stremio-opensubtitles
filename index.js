@@ -71,6 +71,6 @@ http.createServer((req, res) => {
     } else {
         res.end(JSON.stringify({ error: "Invalid request" }));
     }
-}).listen(PORT, "0.0.0.0", () => {
+}).listen(PORT, "::", () => {  // ✅ FIX: Listen on "::" instead of "0.0.0.0" or "::1"
     console.log(`✅ Stremio OpenSubtitles Add-on is running on port ${PORT}`);
 });

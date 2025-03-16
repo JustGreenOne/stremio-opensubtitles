@@ -12,18 +12,18 @@ const builder = new addonBuilder({
     resources: ["subtitles"],
     types: ["movie", "series"],
     catalogs: [],
-    idPrefixes: ["tt"],
+    idPrefixes: ["tt"], // Must start with "tt" (IMDb ID format)
     behaviorHints: { configurable: false }
 });
 
 const addonInterface = builder.getInterface();
 
-// Serve the manifest.json
+// Serve the manifest.json as per Stremio protocol
 app.get("/manifest.json", (req, res) => {
     res.json(addonInterface.manifest);
 });
 
-// Serve the subtitles handler (optional, adjust as needed)
+// Serve the subtitles response (Stremio will call this when subtitles are needed)
 app.get("/subtitles/:type/:id", async (req, res) => {
     const { type, id } = req.params;
     const subtitles = await addonInterface.subtitles({ type, id });
@@ -31,6 +31,6 @@ app.get("/subtitles/:type/:id", async (req, res) => {
 });
 
 // Start the Express server
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
     console.log(`✅ Stremio OpenSubtitles Add-on is running on port ${PORT}`);
 });
